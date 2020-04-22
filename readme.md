@@ -12,5 +12,5 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial-NoDeri
 
 This copyright may change in future.
 
-[toc]: [https://github.com/chandru89new/Vue-Design-Patterns-Book/blob/master/toc.md]
+[toc]: https://github.com/chandru89new/Vue-Design-Patterns-Book/blob/master/toc.md
 [cc]: http://creativecommons.org/licenses/by-nc-nd/4.0/
