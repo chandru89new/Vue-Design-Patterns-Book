@@ -1,11 +1,11 @@
 # Contents
 
 - [Introduction To Vue Design Patterns][intro]
-    - What is this book all about?
-    - What are design patterns?
-    - How can design patterns help?
-    - Who is this book for?
-    - A note on code samples
+    - [What is this book all about?](https://github.com/chandru89new/Vue-Design-Patterns-Book/blob/master/01-intro.md#what-is-this-book-all-about)
+    - [What are design patterns?](https://github.com/chandru89new/Vue-Design-Patterns-Book/blob/master/01-intro.md#what-are-design-patterns)
+    - [How can design patterns help?](https://github.com/chandru89new/Vue-Design-Patterns-Book/blob/master/01-intro.md#how-can-design-patterns-help)
+    - [Who is this book for?](https://github.com/chandru89new/Vue-Design-Patterns-Book/blob/master/01-intro.md#who-is-this-book-for)
+    - [A note on code samples](https://github.com/chandru89new/Vue-Design-Patterns-Book/blob/master/01-intro.md#a-note-on-code-samples)
 
 - Design Pattern #1: Creating Components Made Easy
     - intro = how to make creating new components easier than having to write repetitive code to handle loading, error and no-data states
