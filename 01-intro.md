@@ -38,6 +38,6 @@ That said, you will find this useful if:
 - you realize you are creating applications with very similar peripheral logic in most components you create
 - you want to just find out what's in the book because the table of contents piqued your interest
 
-## Code samples
+## A Note on Code samples
 
 --WIP--
