@@ -261,6 +261,8 @@ You will notice a few things here:
 - we use something called `this.$scopedSlots.default()` to create the VNode and return it from the `render()` function
 - and finally, inside our `this.$scopedSlots.default()` function, we pass the data that we need to pass to the slot. In this case, it's the `user` object from the component's data function (that's why we use `this.user`)
 
+<!-- TODO: write an explanation of $slots & $scopedSlots -->
+
 Given this, let us now construct our `DataProvider` component.
 
 These are our basic goals with the new `DataProvider` component:
@@ -438,3 +440,6 @@ And just like that, we've outsourced the whole ( show loading -> try to get data
 ## Renderless to Render Component: Custom Slots
 
 ## Going Deeper with Global Source (via Vuex)
+
+
+[objdestructuring]: https://wesbos.com/destructuring-objects
