@@ -93,7 +93,7 @@ Let's take the case of this simple user-info card. It shows an avatar, a name an
 
 Here's how the card looks:
 
-![User Info Card](https://imgur.com/a/uuDASn1)
+![User Info Card](https://i.imgur.com/yv2XjJX.png)
 
 Barring styling information, you might end up with a code that looks like this:
 
