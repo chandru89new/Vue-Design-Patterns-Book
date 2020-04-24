@@ -12,7 +12,7 @@ If we take a component that renders a UI based on data, we automatically have th
 - an error state in case there was some issue with the data fetching
 - a data state (which can be split into two: no data and data)
 
-In the wild, a component typically looks like this:
+In the wild, the states we talked about above look like this in a component:
 
 ```vue
 <template>
@@ -25,6 +25,7 @@ export default {
             loading: true,
             data: [],
             error: ''
+            ... // other properties
         }
     },
     mounted() {
@@ -86,6 +87,8 @@ export default {
 ```
 
 Don't worry if the syntax looks unfamiliar or convoluted. It will take you just a few minutes to understand this.
+
+But do notice that in the `<script>` block, we've almost gotten rid of everything.
 
 ## Use Case / Example
 
@@ -246,7 +249,7 @@ export default {
         user: { name: 'Becky Smith', email: 'becky.sims@example.com' }
     })
     render() {
-        return this.$scopedSlots({
+        return this.$scopedSlots.default({
             user: this.user
         })
     }
@@ -414,7 +417,7 @@ export default {
 </script>
 ```
 
-Not a lot has changed in the `<template>` block other than the fact that now we're using one single wrapping `<div>` that uses the `slot-scope`.
+Not a lot has changed in the `<template>` block other than the fact that now we're using a single wrapping `<div>` that uses the `slot-scope`.
 
 ```vue
 <div slot-scope="{ data, loading, error }"> ... </div>
@@ -437,9 +440,163 @@ All we do is import the `DataProvider` component, and then initialize the `run` 
 
 And just like that, we've outsourced the whole ( show loading -> try to get data -> show data if success / show error if error ) to another component that is generic enough that it can be used a million times and more now.
 
-## Renderless to Render Component: Custom Slots
+## Renderless to Render Component: Named Slots With Props
+
+While we did reduce the code required anymore when you create new components, there is something to be said about this part in the `UserCard` component:
+
+```vue
+<template v-if="loading">Loading...</template>
+<template v-else-if="error">Something went wrong</template>
+<template v-else-if="data">
+```
+
+Seems like this is something you'll be writing in every component in order to conditionally render the loading, error or data states.
+
+That's repetition too and we can try and get rid of that.
+
+To do this, we will go back to using the `<template>` block in our `DataProvider` and use something called "named slots".
+
+A named slot is nothing more than a simple `<slot />` but with a specific name.
+
+For example, let's say there's a component (called `Post`) like this:
+
+```vue
+<template>
+    <div>
+        <h1><slot name="heading" /></h1>
+        <h3><slot name="summary" /><h3>
+        <slot />
+    </div>
+</template>
+```
+
+We can use this component this way:
+
+```vue
+<template>
+    <Post>
+        <template v-slot:heading>Title of the post goes here</template>
+        <template v-slot:summary>Post summary goes here</template>
+        <!-- rest of the content -->
+        ...
+    </Post>
+</template>
+```
+
+If we say `<slot />`, it's the default slot. (That's why we had `this.$scopedSlots.default()` back in the previous section). This is similar to saying `<slot name="default" />`.
+
+But we can also give a name to each slot we create and then in the consuming component mention what content goes into which slot by using the `<template v-slot:slotName>` syntax.
+
+Interestingly, we can also bind properties/data to each slot that we create.
+
+For example:
+
+```vue
+<slot name="heading" :prefix="headingPrefix" :suffix="headingSuffix" />
+```
+
+Let's assume `headingPrefix` and `headingSuffix` are just strings that exist in the state of that component (ie, in data or computed property).
+
+And when we use this:
+
+```vue
+<template v-slot:heading="{ prefix, suffix }">
+    {{ prefix }} Title of the Post Goes Here {{ suffix }}
+</template>
+```
+
+And the `prefix` and `suffix` strings will be rendered.
+
+Notice three things here:
+- we are simply using `<slot>` like a component
+- we are giving it a name so that when actually using the component, we have the `slotName` for our `<template v-slot:slotName>` block
+- and we are simply attaching props to the `<slot>` like we normally do to our components. This prop (in this case `prefix` and `suffix` become available for us later when we compose/create the new components)
+
+The most interesting part for us, however, is that we can attach a `v-if` to these `<slot>`s.
+
+So the plan to reduce/remove the overhead of writing `<template v-if="loading">` and so on for `data` and `error` is gone if we simply transfer that to the `DataProvider`. 
+
+Here's our new `DataProvider` now:
+
+```vue
+<template>
+    <div>
+        <slot name="loading" :loading="loading" v-if="loading" />
+        <slot name="error" :error="error" v-if="!loading && error" />
+        <slot name="data" :data="data" v-if="!loading && data" />
+    </div>
+</template>
+<script>
+export default {
+    props: ["run"],
+    data: () => ({
+        data: null,
+        error: null,
+        loading: true
+    }),
+    async mounted() {
+        try {
+            const d = await this.$props.run();
+            this.data = d.data;
+        } catch (e) {
+            this.error = e.message;
+        }
+        this.loading = false;
+    }
+};
+</script>
+```
+
+We made these changes:
+
+- we removed the `render()` function since we're going back to `<template>` blocks
+- we added three `<slots>`, one each for `data`, `loading` and `error`
+- and we also added a conditional `v-if` on each of these slots. They will only render/be accessible when the conditions are met.
+
+Just like how we exposed `loading`, `data` and `error` states, we also expose them via the individual `<slot>`s. 
+
+We can now refine our `UserCard` to be like this: (ignoring the `<script>` block because it remains the same)
+
+```vue
+<template>
+    <DataProvider :run="run">
+        <template v-slot:loading>Loading</template>
+        <template v-slot:error="{ error }">
+            {{ JSON.stringify(error) }}
+        </template>
+        <template v-slot:data="{ data }">
+            <div class="card">
+                <div class="avatar">
+                    <img :src="data.results[0].picture.medium" />
+                </div>
+                <div class="user-info">
+                    <div class="name">
+                        {{ data.results[0].name.first }}
+                        {{ data.results[0].name.last }}
+                    </div>
+                    <div class="email">{{ data.results[0].email }}</div>
+                    <div class="registered">
+                        Member since
+                        {{
+                        new Intl.DateTimeFormat("en-GB", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                        }).format(new Date(data.results[0].registered))
+                        }}
+                    </div>
+                </div>
+            </div>
+            <div class="mt-10">
+                <pre>{{ JSON.stringify(data, null, 2) }}</pre>
+            </div>
+        </template>
+    </DataProvider>
+</template>
+```
+
+As you can see, we get rid of the `v-if`s in the code of `UseCard` and simply replace them with the appropriate slots. The `DataProvider` will take care of which slot to show/hide.
 
 ## Going Deeper with Global Source (via Vuex)
-
 
 [objdestructuring]: https://wesbos.com/destructuring-objects
