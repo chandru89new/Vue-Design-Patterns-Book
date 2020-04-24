@@ -7,7 +7,7 @@
     - [Who is this book for?](01-intro.md#who-is-this-book-for)
     - [A note on code samples](01-intro.md#a-note-on-code-samples)
 
-- [Design Pattern #1: Creating Components Made Easy](02-creating-components.md)
+- [Design Pattern #1: Creating Components Made Easy](02-creating-components-made-easy.md)
     - Introduction
     - Use Case / Example
     - Renderless Components and Scoped Slots
