@@ -89,7 +89,7 @@ Don't worry if the syntax looks unfamiliar or convoluted. It will take you just 
 
 ## Use Case / Example
 
-Let's take the case of this simple user-info card. It shows an avatar, a name and some other information of a specific user. We get this user by making an API call (in this case, to `https://randomuser.me/api/1.0/?seed=foobaz`). (Just to ensure you understand the properties used in the upcoming code, [look at the response of that call here](https://randomuser.me/api/1.0/?seed=foobaz).)
+Let's take the case of this simple user-info card. It shows an avatar, a name and some other information of a specific user. We get this user by making an API call (in this case, to `https://randomuser.me/api/1.0/?seed=foobaz`). (Just to ensure you understand the properties used in the upcoming code, [look at the response of that call here](https://randomuser.me/api/1.0/?seed=foobar).)
 
 Here's how the card looks:
 
