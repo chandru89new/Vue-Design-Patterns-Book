@@ -30,14 +30,18 @@ But there's something to be said about design patterns (or abstractions) beyond 
 
 ## Who is this book for?
 
-This is not a beginner's book. If you are new to Vue.js or if you have not spent some time writing applications in Vue.js, you might not find this book to be very useful. 
+This is not a beginner's book. If you are new to Vue.js or if you have not spent some time writing an application or two in Vue.js, you might not find this book to be very useful. 
 
 That said, you will find this useful if:
-- you have spent some time writing Vue applications and understand basic ideas of the framework
+- you understand basic ideas of Vue.js
 - you feel like you have plateaued when it comes to Vue and need some new ideas to play with and put into practice at work / projects
 - you realize you are creating applications with very similar peripheral logic in most components you create
 - you want to just find out what's in the book because the table of contents piqued your interest
 
 ## A Note on Code samples
 
---WIP--
+WIP 
+
+### Lazy loading components
+
+WIP

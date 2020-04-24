@@ -1,17 +1,18 @@
 # Contents
 
-- [Introduction To Vue Design Patterns][intro]
-    - [What is this book all about?](https://github.com/chandru89new/Vue-Design-Patterns-Book/blob/master/01-intro.md#what-is-this-book-all-about)
-    - [What are design patterns?](https://github.com/chandru89new/Vue-Design-Patterns-Book/blob/master/01-intro.md#what-are-design-patterns)
-    - [How can design patterns help?](https://github.com/chandru89new/Vue-Design-Patterns-Book/blob/master/01-intro.md#how-can-design-patterns-help)
-    - [Who is this book for?](https://github.com/chandru89new/Vue-Design-Patterns-Book/blob/master/01-intro.md#who-is-this-book-for)
-    - [A note on code samples](https://github.com/chandru89new/Vue-Design-Patterns-Book/blob/master/01-intro.md#a-note-on-code-samples)
+- [Introduction To Vue Design Patterns](01-intro.md)
+    - [What is this book all about?](01-intro.md#what-is-this-book-all-about)
+    - [What are design patterns?](01-intro.md#what-are-design-patterns)
+    - [How can design patterns help?](01-intro.md#how-can-design-patterns-help)
+    - [Who is this book for?](01-intro.md#who-is-this-book-for)
+    - [A note on code samples](01-intro.md#a-note-on-code-samples)
 
-- Design Pattern #1: Creating Components Made Easy
-    - intro = how to make creating new components easier than having to write repetitive code to handle loading, error and no-data states
-    - basic idea behind abstraction = all components that deal with data have a tuple of states: data, loading, error. 
-    - extracting this out into a renderless component; using slot-scope.
-    - going a step ahead: making the component read from a global source through key (vuex, store abstraction)
+- [Design Pattern #1: Creating Components Made Easy](02-creating-components.md)
+    - Introduction
+    - Use Case / Example
+    - Renderless Components and Scoped Slots
+    - Renderless to Render Component: Custom Slots and Slot Props
+    - Going Deeper with Tuples and Global Source (via Vuex)
 
 - Design Pattern #2: Extracting API Response Handlers Out of Store Actions
     - intro = API request data & responses cannot be used as-is. they are tweaked. often when backend and frontend dev happens asynchronously (or very independently), or when API responses are in flux, this pattern comes handy
@@ -28,6 +29,3 @@
     - intro = the logic of not having to call/import each component of your app wherever it is used; where it helps; where it does not help (async imports)
     - writing a simple installer function to import all your components and use Vue.use()
     - automating the idea using a custom nodejs script to do the above
-
-
-[intro]: https://github.com/chandru89new/Vue-Design-Patterns-Book/blob/master/01-intro.md
