@@ -8,11 +8,11 @@
     - [A note on code samples](01-intro.md#a-note-on-code-samples)
 
 - [Design Pattern #1: Creating Components Made Easy](02-creating-components-made-easy.md)
-    - Introduction
-    - Use Case / Example
-    - Renderless Components and Scoped Slots
-    - Renderless to Render Component: Custom Slots and Slot Props
-    - Going Deeper with Tuples and Global Source (via Vuex)
+    - [Introduction](02-creating-components-made-easy.md#introduction)
+    - [Use Case / Example](02-creating-components-made-easy.md#use-case--example)
+    - [Renderless Components and Scoped Slots](02-creating-components-made-easy.md#renderless-components-and-scoped-slots)
+    - [Renderless to Render Component: Custom Slots and Slot Props](02-creating-components-made-easy.md#renderless-to-render-component-named-slots-with-props)
+    - [Going Deeper with Global Source (via Store)](02-creating-components-made-easy.md#going-deeper-with-global-source-via-store)
 
 - Design Pattern #2: Extracting API Response Handlers Out of Store Actions
     - intro = API request data & responses cannot be used as-is. they are tweaked. often when backend and frontend dev happens asynchronously (or very independently), or when API responses are in flux, this pattern comes handy

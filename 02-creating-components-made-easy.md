@@ -608,8 +608,12 @@ How do we handle loading, error and data in these cases?
 
 Here's a simple Vuex store that gets and stores user information:
 
-```vue
-// ... all imports 
+```js
+import Vue from "vue";
+import Vuex from "vuex";
+import axios from "axios";
+
+Vue.use(Vuex);
 
 export default Vuex.Store({
     state: {
@@ -676,7 +680,7 @@ Seems like we could club these together into a single object and then somehow ge
 
 Let's do it:
 
-```vue
+```js
 import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
@@ -848,7 +852,7 @@ For safety reasons, in each of the computed property, we first make sure that ou
 
 In our `UserInfo` component, specifically in the `<template v-slot:data>` block, we assume that the `data` has certain keys. But this may not be true always. For example, the server may respond with a completely different schema and our store might end up with an object that looks like:
 
-```
+```js
 data = {
     firstName: undefined,
     lastName: undefined,
