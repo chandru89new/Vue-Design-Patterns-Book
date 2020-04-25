@@ -155,7 +155,7 @@ export default {
 
 ## Renderless Components and Scoped Slots
 
-Did you notice that there are some things that are quite common here?
+Did you notice that there are some things here that could be quite common in most other components you create?
 
 - making an API call to get data
 - setting the loading state to true/false depending on the API call resolution
@@ -442,7 +442,7 @@ And just like that, we've outsourced the whole ( show loading -> try to get data
 
 ## Renderless to Render Component: Named Slots With Props
 
-While we did reduce the code required anymore when you create new components, there is something to be said about this part in the `UserCard` component:
+While we did reduce the code required for the times you create new components, there is something to be said about this part in the `UserCard` component:
 
 ```vue
 <template v-if="loading">Loading...</template>
@@ -483,7 +483,7 @@ We can use this component this way:
 </template>
 ```
 
-If we say `<slot />`, it's the default slot. (That's why we had `this.$scopedSlots.default()` back in the previous section). This is similar to saying `<slot name="default" />`.
+If we say `<slot />`, it's the default slot. This is similar to saying `<slot name="default" />`. (That's why we had `this.$scopedSlots.default()` back in the previous section).
 
 But we can also give a name to each slot we create and then in the consuming component mention what content goes into which slot by using the `<template v-slot:slotName>` syntax.
 
@@ -497,11 +497,13 @@ For example:
 
 Let's assume `headingPrefix` and `headingSuffix` are just strings that exist in the state of that component (ie, in data or computed property).
 
-And when we use this:
+We can use this named slot like this:
 
 ```vue
-<template v-slot:heading="{ prefix, suffix }">
-    {{ prefix }} Title of the Post Goes Here {{ suffix }}
+<template>
+    <template v-slot:heading="{ prefix, suffix }">
+        {{ prefix }} Title of the Post Goes Here {{ suffix }}
+    </template>
 </template>
 ```
 
@@ -528,7 +530,9 @@ Here's our new `DataProvider` now:
 </template>
 <script>
 export default {
-    props: ["run"],
+    props: {
+        run: { type: Function, required: true }
+    },
     data: () => ({
         data: null,
         error: null,
@@ -587,9 +591,6 @@ We can now refine our `UserCard` to be like this: (ignoring the `<script>` block
                     </div>
                 </div>
             </div>
-            <div class="mt-10">
-                <pre>{{ JSON.stringify(data, null, 2) }}</pre>
-            </div>
         </template>
     </DataProvider>
 </template>
@@ -597,6 +598,266 @@ We can now refine our `UserCard` to be like this: (ignoring the `<script>` block
 
 As you can see, we get rid of the `v-if`s in the code of `UseCard` and simply replace them with the appropriate slots. The `DataProvider` will take care of which slot to show/hide.
 
-## Going Deeper with Global Source (via Vuex)
+## Going Deeper with Global Source (via Store)
+
+In an application which mostly stores and derives (computes) the data from a global store (like Vuex), the pattern we just devised may fall short.
+
+For example, in most applications, a page-like component may dispatch an action via the store, which then updates a global store variable, which then computes the data for the page-like component which is then passed on to the children.
+
+How do we handle loading, error and data in these cases?
+
+Here's a simple Vuex store that gets and stores user information:
+
+```vue
+// ... all imports 
+
+export default Vuex.Store({
+    state: {
+        user: {
+            firstName: '',
+            lastName: '',
+            email: '',
+            created: 0
+        },
+        fetchingUserInfo: false,
+        fetchUserInfoError: null
+    },
+    mutations: {
+        fetchUserInfoStart(state) { state.fetchingUserInfo = true },
+        fetchUserInfoSuccess(state, payload) { state = ({
+            ...state,
+            user: ...payload
+        }) },
+        fetchUserInfoError(state, error) { state.fetchUserInfoError = error },
+        fetchUserInfoEnd(state) { state.fetchingUserInfo = false }
+    },
+    actions: {
+        async getUserInfo(ctx, payload) {
+            ctx.commit('fetchUserInfoStart')
+            try {
+                const res = await axios.get(`https://randomuser.me/api/1.0/?seed=${payload.id}`)
+                ctx.commit('fetchUserInfoSuccess', {
+                    firstName: res.results[0].name.first,
+                    lastName: res.results[0].name.last,
+                    email: res.results[0].email,
+                    created: res.results[0].registered
+                })
+            }
+            catch (e) {
+                ctx.commit('fetchUserInfoError', e)
+            }
+            ctx.commit('fetchUserInfoEnd')
+        }
+    }
+})
+```
+
+Some things about this configuration:
+
+- the core of the state is the `user` object. 
+- the state also has keys for us to store the `loading` state of the request and the error object (if something goes wrong during the requesting phase)
+- and we have the actions and the mutations that update the state based on what state the requesting phase is in: if it just started, we have `fetchUserInfoStart` which makes `fetchingUserInfo` true (ie, the loading state), if the request succeeded we have `fetchUserInfoSuccess` with the payload and so on.
+
+So far, seems pretty normal.
+
+How do we use this in our `DataProvider` abstraction?
+
+While we could make the `UserInfo` component pass the `getUserInfo` action directly to the `DataProvider` but that doesn't solve really because how does `DataProvider` know which key of the store to look for when computing `data`, `error` and `loading` values?
+
+We could pass the keys to look for but that would make `DataProvider` really dependent on a lot of props being passed down to it.
+
+So how do we solve this?
+
+### Data Structure In Stores
+
+Did you notice that in the `state` of the Vuex Store, we have almost the same kind of tri-state that we have in new components? There's a data state (which is the `user` object), then there is the loading state (`fetchingUserInfo`) and finally the error state (`fetchUserInfoError`).
+
+Seems like we could club these together into a single object and then somehow get `DataProvider` to read just that single object to get the state of the request!
+
+Let's do it:
+
+```vue
+import Vue from "vue";
+import Vuex from "vuex";
+import axios from "axios";
+
+Vue.use(Vuex);
+
+export default new Vuex.Store({
+  state: {
+    user: {
+      loading: false,
+      error: null,
+      data: null,
+    },
+  },
+  mutations: {
+    fetchUserInfoStart(state) {
+      state.user.loading = true;
+    },
+    fetchUserInfoSuccess(state, payload) {
+      Vue.set(state, "user", {
+        ...state.user,
+        data: payload,
+      });
+    },
+    fetchUserInfoError(state, error) {
+      state.user.error = error;
+    },
+    fetchUserInfoEnd(state) {
+      state.user.loading = false;
+    },
+  },
+  actions: {
+    async getUserInfo(ctx, payload) {
+      ctx.commit("fetchUserInfoStart");
+      try {
+        const res = await axios.get(
+          `https://randomuser.me/api/1.0/?seed=${payload.id}`
+        );
+        ctx.commit("fetchUserInfoSuccess", {
+          firstName: res.data.results[0].name.first,
+          lastName: res.data.results[0].name.last,
+          email: res.data.results[0].email,
+          created: res.data.results[0].registered,
+          avatar: res.data.results[0].picture.medium,
+        });
+      } catch (e) {
+        ctx.commit("fetchUserInfoError", e);
+      }
+      ctx.commit("fetchUserInfoEnd");
+    },
+  },
+});
+
+```
+
+We've done two things:
+
+- modified the data structure to have a single key (`user`) that holds all the information about the request state
+- modified mutations to match the data structure of our `user` object
+
+Note that since we set `data: null` when we initialize the user, we use `Vue.set` when we modify the `user` object after a successful dispatch. This may not be necessary if we define `data: { ... }` even as we initialize it in `state` but this method comes in handy later.
+
+The `getUserInfo` action remains the same.
+
+Now, `DataProvider` can actually refer to the `user` key in the global store to compute the required states.
+
+However, it would be the `UserInfo` card that hands the store key to the `DataProvider` component.
+
+Here's how the `UserInfo` card looks:
+
+```vue
+<template>
+    <DataProvider :run="getUserInfo" store="user">
+        <template v-slot:loading>Loading...</template>
+        <template v-slot:error="{ error }">Something went wrong: {{ error }}</template>
+        <template v-slot:data="{ data }">
+            <div class="card">
+                <div class="avatar">
+                    <img :src="data.avatar" />
+                </div>
+                <div class="user-info">
+                    <div class="name">
+                        {{ data.firstName }}
+                        {{ data.lastName }}
+                    </div>
+                    <div class="email">{{ data.email }}</div>
+                    <div class="registered">
+                        Member since
+                        {{
+                        new Intl.DateTimeFormat("en-GB", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                        }).format(new Date(data.created))
+                        }}
+                    </div>
+                </div>
+            </div>
+        </template>
+    </DataProvider>
+</template>
+<script>
+export default {
+    components: {
+        DataProvider: () => import("./DataProvider")
+    },
+    methods: {
+        getUserInfo() {
+            return this.$store.dispatch("getUserInfo", { id: "foobar" });
+        }
+    }
+};
+</script>
+```
+
+In this, we are:
+- sending the actual dispatch call to `DataProvider` and
+- we are also telling that component which key of the store state to look into (`store="user"`)
+
+Let's now make changes to the `DataProvider` component.
+
+Remember that we have to do two things:
+
+1. Instead of getting a value from the `run` function, we just run that function as it is simply a dispatch.
+2. Instead of manually fiddling around with the `data`, `loading` and `error` keys, we just compute them from the store.
+
+```vue
+<template>
+    <div>
+        <slot name="loading" :loading="loading" v-if="loading" />
+        <slot name="error" :error="error" v-if="!loading && error" />
+        <slot name="data" :data="data" v-if="!loading && data" />
+    </div>
+</template>
+<script>
+export default {
+    props: {
+        run: { type: Function, required: true },
+        store: { type: String, required: true }
+    },
+    computed: {
+        loading() {
+            return (
+                this.$store.state[this.store] &&
+                this.$store.state[this.store].loading
+            );
+        },
+        data() {
+            return (
+                this.$store.state[this.store] &&
+                this.$store.state[this.store].data
+            );
+        },
+        error() {
+            return (
+                this.$store.state[this.store] &&
+                this.$store.state[this.store].error
+            );
+        }
+    },
+    async mounted() {
+        this.run();
+    }
+};
+</script>
+```
+
+For safety reasons, in each of the computed property, we first make sure that our store indeed has the key that we're trying to access before computing the `.data`, `.loading` and `.error` properties of that key.
+
+In our `UserInfo` component, specifically in the `<template v-slot:data>` block, we assume that the `data` has certain keys. But this may not be true always. For example, the server may respond with a completely different schema and our store might end up with an object that looks like:
+
+```
+data = {
+    firstName: undefined,
+    lastName: undefined,
+    ... // everything else: undefined
+}
+```
+
+Also, sometimes the data may be null as the response may have nothing in it even though the dispatch action finished successfully.
+
+These kinds of cases are disastrous if you don't put in place sanity checks at every data handover junction. This can be done in a variety of ways and mostly depends on how you/your team decides to validate data coming into the system. I will leave that out as it is beyond the scope of this book.
 
 [objdestructuring]: https://wesbos.com/destructuring-objects
