@@ -866,7 +866,7 @@ These kinds of cases are disastrous if you don't put in place sanity checks at e
 
 One more thing to note is this part of the code in `DataProvider`:
 
-```vue
+```js
 computed: {
     loading() {
         return (
@@ -890,5 +890,7 @@ computed: {
 ```
 
 This direct access of state variables is not really recommended. You should setup `getters` for accessing all the state properties instead of directly getting their values.
+
+And that brings us to the end of this pattern.
 
 [objdestructuring]: https://wesbos.com/destructuring-objects
