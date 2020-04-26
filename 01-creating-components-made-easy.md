@@ -860,8 +860,35 @@ data = {
 }
 ```
 
-Also, sometimes the data may be null as the response may have nothing in it even though the dispatch action finished successfully.
+Also, sometimes the data may be `null` as the response may have nothing in it even though the dispatch action finished successfully.
 
 These kinds of cases are disastrous if you don't put in place sanity checks at every data handover junction. This can be done in a variety of ways and mostly depends on how you/your team decides to validate data coming into the system. I will leave that out as it is beyond the scope of this book.
+
+One more thing to note is this part of the code in `DataProvider`:
+
+```vue
+computed: {
+    loading() {
+        return (
+            this.$store.state[this.store] &&
+            this.$store.state[this.store].loading
+        );
+    },
+    data() {
+        return (
+            this.$store.state[this.store] &&
+            this.$store.state[this.store].data
+        );
+    },
+    error() {
+        return (
+            this.$store.state[this.store] &&
+            this.$store.state[this.store].error
+        );
+    }
+}
+```
+
+This direct access of state variables is not really recommended. You should setup `getters` for accessing all the state properties instead of directly getting their values.
 
 [objdestructuring]: https://wesbos.com/destructuring-objects
