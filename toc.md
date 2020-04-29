@@ -18,7 +18,6 @@
     - intro = caveat: tested with REST calls only; API request data & responses cannot be used as-is. they are tweaked. often when backend and frontend dev happens asynchronously (or very independently), or when API responses are in flux, this pattern comes handy
     - skeleton idea implementation = a handler helper function that "intercepts" the API requests made in store actions
     - expanding on the skeleton = extracting the whole of API handling outside the store as a helper with a dictionary and then using it in store actions
-    - going even further = extracting model (business logic) from store and using store only as a reactive interface. using Elm architecture as a theme for modeling data used in the app.
 
 - Design Pattern #3: Abstract Store
     - intro = repetitive code in store example;
