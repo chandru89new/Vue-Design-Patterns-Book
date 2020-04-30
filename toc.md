@@ -26,10 +26,12 @@
     - generic mutations to get rid of all others
     - generic actions (while keeping some special actions that involve multiple models)
 
-- Design Pattern #4: Unleashing The True Potential Of v-model In Complicated Forms And Other Places
-    - intro = establishing the event emitter pattern as something with a lot of overheads and work; looking at built-in form event handling: v-model.
-    - skeletal idea = building a simple multi-input form that uses v-model to update prop data (vue typically warns you when you update prop directly)
-    - extending skeleton = handing functions to forms a la React and letting them handle their own updates
+- [Design Pattern #4: Unleashing The True Potential Of v-model In Complicated Forms And Other Places](04-v-model-on-steroids.md)
+    - [Introduction](04-v-model-on-steroids.md#introduction)
+    - [Two-way Communication: Child Components, Props and Event Emitters](04-v-model-on-steroids.md#two-way-communication-child-components-props-and-event-emitters)
+    - [Letting Child Components Run the Roost](04-v-model-on-steroids.md#letting-child-components-run-the-roost)
+    - [Using with Store](04-v-model-on-steroids.md#using-with-store)
+    - [But What About The Loading States?](04-v-model-on-steroids.md#but-what-about-the-loading-states)
 
 - Design Pattern #5: Faster Development And Component Access With Global Component Installs
     - intro = the logic of not having to call/import each component of your app wherever it is used; where it helps; where it does not help (async imports)
