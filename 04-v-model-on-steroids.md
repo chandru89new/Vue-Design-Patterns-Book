@@ -713,6 +713,17 @@ However, the child component does not update unless we ask it explicitly to. If 
 
 In order to prevent this, we need to force the child component to load again when `authorDetails` is updated (ie, the store dispatch resolves and updates the store value). That is why we use a `:key`. Since the value of the `key` gets updated, that forces the child component to re-render with the new data.
 
+If you do not want to use `key` to force a re-render with the updated data, you can attach a `watch` to `$props.details` in the child component and update the local state from there.
+
 ## But What About The Loading States?
 
+In our examples, we haven't talked about the loading state.
 
+As an example, when the parent gets data from the backend, it takes about a second to fetch the data and then hand it over to the child component. When that happens, how to handle the loading state?
+
+The other loading state is when the child mutates the data which triggers the `updateUser` action in the parent. When this happens, who handles the loading state? The child? Or the parent?
+
+Both are viable options. However, on first glance, you'll notice that it is easier for the parent to know the loading state for both the `getUser` and `updateUser` actions as those actions are promises returning a value.
+
+
+Even better would be to use the Tuple technique introduced in Chapter 1 where the user details is stored as a tuple of `data`, `loading` and `error` fields; this way, the child will get the loading state automatically because the store action will mutate the `loading` key according to the state of the API response.
