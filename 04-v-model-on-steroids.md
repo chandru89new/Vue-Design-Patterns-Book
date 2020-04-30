@@ -10,11 +10,11 @@ That is what we'll look at in this pattern.
 
 ## Two-way Communication: Child Components, Props and Event Emitters
 
-In Vue, like in React, data-flow is one-way. Parent components hand over data to children and if a child component wants to edit that data (which is a prop), it emits an event up to the parent component. The parent component then handles the event and mutates the data being sent to the children.
+In Vue, like in React, data-flow is mostly one-way. Parent components hand over data to children and if a child component wants to edit that data (which is a prop), it emits an event up to the parent component. The parent component then handles the event and mutates the data being sent to the children.
 
 This pattern is enforced by Vue so if your child component tries to modify the `prop` it receives, you will see warnings/errors in your dev console.
 
-However, you do notice that this does not happen when you use `v-model`. This is because `v-model` is sort of a combination of `v-bind` and `v-on`. 
+However, you do notice that this does not happen when you use `v-model`. This is because `v-model` is sort of a combination of `v-bind` (shortened as `:`) and `v-on` (shortened as `@`). `v-model` enables two-way data binding in Vue.
 
 For example, these two pieces of code mean the same:
 
@@ -23,7 +23,7 @@ For example, these two pieces of code mean the same:
 ```
 
 ```vue
-<input :value="firstName" @change="e => firstName = e.target.value" />
+<input :value="firstName" @input="e => firstName = e.target.value" />
 ```
 
 When a `v-model` is used, the value is bound to the component and it is updated when the value is modified by the component.
