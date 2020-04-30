@@ -628,7 +628,7 @@ What we're doing is fairly simple:
 - on component's `mounted` hook, we dispatch a store action that gets data from the backend for `userId=1`
 - the actual data that is being passed to the child component as a v-model is `authorDetails` which is computed from the store. Note that instead of simply using this:
 
-```vue
+```js
 authorDetails() {
     return this.$store.getters.getUser
 }
@@ -636,7 +636,7 @@ authorDetails() {
 
 we are using:
 
-```vue
+```js
 authorDetails: {
   get() {
     return this.$store.getters.getUser;
