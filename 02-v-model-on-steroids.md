@@ -1,4 +1,4 @@
-# Design Pattern #3: Unleashing The True Potential Of v-model In Complicated Forms And Other Places
+# Design Pattern #2: Unleashing The True Potential Of v-model In Complicated Forms And Other Places
 
 ## Introduction
 
