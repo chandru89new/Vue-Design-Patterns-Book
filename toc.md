@@ -22,9 +22,10 @@
     - [But What About The Loading States?](02-v-model-on-steroids.md#but-what-about-the-loading-states)
 
 - [Design Pattern #3: Extracting API Response Handlers Out of Store Actions](03-extracting-api-out-of-store.md)
-    - intro = caveat: tested with REST calls only; API request data & responses cannot be used as-is. they are tweaked. often when backend and frontend dev happens asynchronously (or very independently), or when API responses are in flux, this pattern comes handy
-    - skeleton idea implementation = a handler helper function that "intercepts" the API requests made in store actions
-    - expanding on the skeleton = extracting the whole of API handling outside the store as a helper with a dictionary and then using it in store actions
+    - [Introduction](03-extracting-api-out-of-store.md#introduction)
+    - [Extracting Fetch](03-extracting-api-out-of-store.md#extracting-fetch)
+    - [Extending the Library With Definitions](03-extracting-api-out-of-store.md#extending-the-library-with-definitions)
+    - [Using Transformations In Definitions](03-extracting-api-out-of-store.md#using-transformations-in-definitions)
 
 - Design Pattern #3: Abstract Store
     - intro = repetitive code in store example;
